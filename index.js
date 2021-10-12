@@ -19,16 +19,16 @@ const radioTemplate = document.querySelector(".radio_template");
 // Template element
 let card = document.querySelector(".card");
 
-// Containner of the templates
+// Container of the templates
 const cardContainer = document.querySelector(".card_container");
 
 // Array of the filters
 let allFilters = {
-  example: []
+  example: [],
 };
 
 // Example of a filter container
-const filterContainer = document.querySelector('.filtercontainer')
+const filterContainer = document.querySelector(".filter_container");
 
 // Loader script (/!\ Need a loader element in webflow having the class .loader)
 const loader = document.querySelector(".loader");
@@ -67,21 +67,22 @@ let creatingElements = arrayData => {
 
   card.remove();
 
-  // Class of the Cloned, better not delete
   let cardCloned = document.querySelectorAll(".cardCloned");
-
-  // Declare your Webflow's elements
   let cardImage = document.querySelectorAll(".card_image");
   let cardTitle = document.querySelectorAll(".card_title");
+  let cardDescription = document.querySelectorAll(".card_description");
+  let cardDate = document.querySelectorAll(".card_date");
+  let cardTag = document.querySelectorAll(".card_tag");
 
   let fuuf = false
   for (i = 0; i < arrayData.length; i++) {
     if(typeof arrayData[i] != 'string') {
-      // Assign data to the Webflow's element
       cardCloned[i - fuuf].href = `/pagetemplate?id=${arrayData[i].record_id}`;
       cardCloned[i - fuuf].style.backgroundColor = arrayData[i].backgroundColor;
       cardImage[i - fuuf].src = arrayData[i].image;
       cardTitle[i - fuuf].textContent = arrayData[i].titre;
+      cardDate[i - fuuf].textContent = arrayData[i].date;
+      cardTag[i - fuuf].textContent = arrayData[i].tag;
     } else {
       fuuf = true      
     }
@@ -121,8 +122,8 @@ const filtering = (method, _filter) => {
     }
   }
   
-  let checked
   let checkingExist = (array, itemToCheck) => {
+    let checked
     for (h = 0; h < array.length; h++) {
       if(array[h].includes(itemToCheck)) {
         checked = true
@@ -179,10 +180,6 @@ let activeFilter = (
           if(element[0] == _filter) {
             comparaisonArray.splice(index, 1)
           }
-  
-          if(element.length == 1) {
-            comparaisonArray.splice(index, 1)
-          }
         } else {
           elementUndefined = true
         }
@@ -200,18 +197,20 @@ let activeFilter = (
       } else {
         element.children[0].checked = true;
         if(_filterType == "checkbox") {
-            if (
-              !filterSelected.find(
-                filter => filter[0] == element.children[1].textContent
-              )
-            ) {
+            if(filterSelected.length == 0) {
               filterSelected = []
               filterSelected.push([element.children[1].textContent, _filter]);
+            } else {
+              if (!filterSelected.find(filter => filter[0] == element.children[1].textContent) && filterSelected[0][1] != _filter) {
+                filterSelected = []
+                filterSelected.push([element.children[1].textContent, _filter]);
+              } else {
+                filterSelected.push([element.children[1].textContent, _filter]);
+              }
             }
           } else {   
             if(filterSelected.length > 0) {
               if(filterSelected.find((element, index) => {
-                console.log(element)
                 element[0][1] == _filter
               })) {
                 filterSelected.splice(index, 1)
@@ -219,11 +218,10 @@ let activeFilter = (
             }
             filterSelected = []
             filterSelected.push([element.children[1].textContent, _filter])
-            console.log(filterSelected)
           }
         }
 
-      if(!elementUndefined) {
+      if(!elementUndefined || filterSelected.length > 0) {
         if(_filterType == "checkbox") {
           filtering("multi", _filter)
         } else {
@@ -311,7 +309,6 @@ let generationFilter = (
   );
 };
 
-// Calling the data
 fetch(
   `https://v1.nocodeapi.com/nicolastr/google_sheets/zIPKRzkQmyYXnwRQ?tabId=${tab}`,
   requestOptions
