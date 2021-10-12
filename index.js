@@ -67,22 +67,21 @@ let creatingElements = arrayData => {
 
   card.remove();
 
+  // Class of the Cloned, better not delete
   let cardCloned = document.querySelectorAll(".cardCloned");
+
+  // Declare your Webflow's elements
   let cardImage = document.querySelectorAll(".card_image");
   let cardTitle = document.querySelectorAll(".card_title");
-  let cardDescription = document.querySelectorAll(".card_description");
-  let cardDate = document.querySelectorAll(".card_date");
-  let cardTag = document.querySelectorAll(".card_tag");
 
   let fuuf = false
   for (i = 0; i < arrayData.length; i++) {
     if(typeof arrayData[i] != 'string') {
+      // Assign data to the Webflow's element
       cardCloned[i - fuuf].href = `/pagetemplate?id=${arrayData[i].record_id}`;
       cardCloned[i - fuuf].style.backgroundColor = arrayData[i].backgroundColor;
       cardImage[i - fuuf].src = arrayData[i].image;
       cardTitle[i - fuuf].textContent = arrayData[i].titre;
-      cardDate[i - fuuf].textContent = arrayData[i].date;
-      cardTag[i - fuuf].textContent = arrayData[i].tag;
     } else {
       fuuf = true      
     }
